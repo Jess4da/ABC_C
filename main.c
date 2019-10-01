@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <conio.h>
+#include <string.h>
 
 int NumTable[2][7][7];
 char AlphaTable[2][7][7];
@@ -127,8 +128,13 @@ int CheckPattern(){
 void DrawTable(int Player, int isClear){
     if (isClear == 1)
         ClearScr();
-    printf("Player %d Score : %d\n", Player, Score[Player-1]);
-    printf("Player %d Has %d Turn Left\n", Player, Turn[Player-1]);
+    char clscolor[10];
+    if (Player == 1)
+        strcpy(clscolor, "\033[1;31m");
+    else
+        strcpy(clscolor, "\033[1;32m");
+    printf("%sPlayer %d Score : %d\n", clscolor, Player, Score[Player-1]);
+    printf("Player %d Has %d Turn Left\033[0m\n", Player, Turn[Player-1]);
     printf("----------------------\n");
     int i, j;
     for (i = 0; i < 7; i++){
@@ -211,11 +217,17 @@ int main(){
     while (1){
 
         int Pos1 = 0, Pos2 = 0;
+        char clscolor[10];
+
+        if (Player == 1)
+                strcpy(clscolor, "\033[1;31m");
+            else
+                strcpy(clscolor, "\033[1;32m");
 
         do{
             DrawTable(Player,1);
-            printf("Player %d Choose 1 Number : ", Player);
-            scanf("%d", &Pos1);
+            printf("%sPlayer %d Choose 1 Number : ", clscolor, Player);
+            scanf("%d\033[0m", &Pos1);
 
         }while (CheckInRange(Pos1) == 0);
 
@@ -223,8 +235,8 @@ int main(){
 
         do{
             DrawTable(Player,1);
-            printf("Player %d Choose a Place to Swap\n[Choose Same number to not Swap]: ", Player);
-            scanf("%d", &Pos2);
+            printf("%sPlayer %d Choose a Place to Swap\n[Choose Same number to not Swap]: ", clscolor, Player);
+            scanf("%d\033[0m", &Pos2);
 
         }while (CheckInRange(Pos2) == 0);
         
@@ -241,9 +253,9 @@ int main(){
     DrawTable(1,1);
     DrawTable(2,0);
     if (Score[0] > Score[1])
-        printf("!!Player 1 Win!!\n");
+        printf("\033[1;31m!!Player 1 Win!!\033[0m\n");
     else if (Score[0] < Score[1])
-        printf("!!Player 2 Win!!\n");
+        printf("\033[1;32m!!Player 2 Win!\033[0m!\n");
     else
         printf("!!DRAW!!\n");
 
