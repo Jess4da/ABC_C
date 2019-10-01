@@ -3,8 +3,8 @@
 #include <time.h>
 #include <conio.h>
 
-int NumTable[2][49];
-char AlphaTable[2][49];
+int NumTable[2][7][7];
+char AlphaTable[2][7][7];
 
 int Turn[2];
 
@@ -15,44 +15,30 @@ void ClearScr(){
 }
 
 void SwapNum(int Player, int Pos1, int Pos2){
-    int i, ntemp, ind1 = -1, ind2 = -1;
+    int i, j, ntemp, row1 = -1, row2 = -1, col1 = -1, col2 = -1;
     char ctemp;
 
-    for (i = 0; i < 49; i++){
-        if (NumTable[Player-1][i] == Pos1)
-            ind1 = i;
-        if (NumTable[Player-1][i] == Pos2)
-            ind2 = i;
-        if (ind1 != -1 && ind2 != -1)
-            break;
+    for (i = 0; i < 7; i++){
+        for (j = 0; j < 7; j++){
+            if (NumTable[Player-1][i][j] == Pos1){
+                row1 = i;
+                col1 = j;
+            }
+            if (NumTable[Player-1][i][j] == Pos2){
+                row2 = i;
+                col2 = j;
+            }
+        }
     }
 
-    ntemp = NumTable[Player-1][ind1];
-    NumTable[Player-1][ind1] = NumTable[Player-1][ind2];
-    NumTable[Player-1][ind2] = ntemp;
+    ntemp = NumTable[Player-1][row1][col1];
+    NumTable[Player-1][row1][col1]= NumTable[Player-1][row2][col2];
+    NumTable[Player-1][row2][col2] = ntemp;
 
-    ctemp = AlphaTable[Player-1][ind1];
-    AlphaTable[Player-1][ind1] = AlphaTable[Player-1][ind2];
-    AlphaTable[Player-1][ind2] = ctemp;
+    ctemp = AlphaTable[Player-1][row1][col1];
+    AlphaTable[Player-1][row1][col1] = AlphaTable[Player-1][row2][col2];
+    AlphaTable[Player-1][row2][col2] = ctemp;
 
-}
-
-void SwapAlpha(int Player, int Pos1, int Pos2){
-    int i, ind1 = -1, ind2 = -1;
-    char temp;
-
-    for (i = 0; i < 49; i++){
-        if (AlphaTable[Player-1][i] == Pos1)
-            ind1 = i;
-        if (AlphaTable[Player-1][i] == Pos2)
-            ind2 = i;
-        if (ind1 != -1 && ind2 != -1)
-            break;
-    }
-
-    temp = NumTable[Player-1][ind1];
-    NumTable[Player-1][ind1] = NumTable[Player-1][ind2];
-    NumTable[Player-1][ind2] = temp;
 }
 
 int CheckInRange(int Pos1, int Pos2){
@@ -62,62 +48,71 @@ int CheckInRange(int Pos1, int Pos2){
 }
 
 int CheckPattern(){
-    int i, j;
+    int i, j, k;
     for (i = 0; i < 2; i++){
+
+        //เช็คแนวนอน
         for (j = 0; j < 7; j++){
-            //เช็คแนวตั้ง
-
-            //เหมือนกัน 6
-            if (AlphaTable[i][j] == AlphaTable[i][j+7] &&
-                AlphaTable[i][j+7] == AlphaTable[i][j+14] &&
-                AlphaTable[i][j+14] == AlphaTable[i][j+21] &&
-                AlphaTable[i][j+21] == AlphaTable[i][j+28] &&
-                AlphaTable[i][j+28] == AlphaTable[i][j+35])
-                Score[i] += 1;
-            //เหมือนกัน 3
-            else if (AlphaTable[i][j] == AlphaTable[i][j+7] &&
-                     AlphaTable[i][j+7] == AlphaTable[i][j+14])
-                Score[i] += 1;
-            
-            //เช็คแนวนอน
-
-            //เหมือนกัน 6
-            if (AlphaTable[i][j] == AlphaTable[i][j+1] &&
-                AlphaTable[i][j+1] == AlphaTable[i][j+2] &&
-                AlphaTable[i][j+2] == AlphaTable[i][j+3] &&
-                AlphaTable[i][j+3] == AlphaTable[i][j+4] &&
-                AlphaTable[i][j+4] == AlphaTable[i][j+5])
-                Score[i] += 1;
-            //เหมือนกัน 3
-            else if (AlphaTable[i][j] == AlphaTable[i][j+1] &&
-                     AlphaTable[i][j+1] == AlphaTable[i][j+2])
-                Score[i] += 1;
-
-            //เช็คตามแพทเทิร์น
+            for (k = 1; k < 6; k++){
+                //เหมือนกัน 3
+                if (AlphaTable[i][j][k-1] == AlphaTable[i][j][k] &&
+                    AlphaTable[i][j][k] == AlphaTable[i][j][k+1]){
+                        Score[i] += 1;
+                    }
+                //เหมือนกัน 6
+                if (AlphaTable[i][j][k-1] == AlphaTable[i][j][k] &&
+                    AlphaTable[i][j][k] == AlphaTable[i][j][k+1]&&
+                    AlphaTable[i][j][k+1] == AlphaTable[i][j][k+2]&&
+                    AlphaTable[i][j][k+2] == AlphaTable[i][j][k+3]&&
+                    AlphaTable[i][j][k+3] == AlphaTable[i][j][k+4]){
+                        Score[i] += 2;
+                    }
+            }
         }
-        //เช็คซ้ำตามจุดที่กำหนด
-        if (AlphaTable[i][0] == AlphaTable[i][6] &&
-                AlphaTable[i][6] == AlphaTable[i][24] &&
-                AlphaTable[i][24] == AlphaTable[i][42] &&
-                AlphaTable[i][42] == AlphaTable[i][48])
-                Score[i] += 10;
 
+        //เช็คแนวตั้ง
+        for (j = 1; j < 6; j++){
+            for (k = 0; k < 7; k++){
+                //เหมือนกัน 3
+                if (AlphaTable[i][j-1][k] == AlphaTable[i][j][k] &&
+                    AlphaTable[i][j][k] == AlphaTable[i][j+1][k]){
+                        Score[i] += 1;
+                        continue;
+                    }
+                //เหมือนกัน 6
+                if (AlphaTable[i][j-1][k] == AlphaTable[i][j][k] &&
+                    AlphaTable[i][j][k] == AlphaTable[i][j+1][k] &&
+                    AlphaTable[i][j+1][k] == AlphaTable[i][j+2][k] &&
+                    AlphaTable[i][j+2][k] == AlphaTable[i][j+3][k] &&
+                    AlphaTable[i][j+3][k] == AlphaTable[i][j+4][k]){
+                        Score[i] += 2;
+                    }
+            }
+        }
+        //เช็คตามแพทเทิร์น
+
+        //เช็คซ้ำตามจุดที่กำหนด
+        if (AlphaTable[i][0][0] == AlphaTable[i][0][6] &&
+            AlphaTable[i][0][6] == AlphaTable[i][3][3] &&
+            AlphaTable[i][3][3] == AlphaTable[i][6][0] &&
+            AlphaTable[i][6][0] == AlphaTable[i][6][6])
+            Score[i] += 10;
         //ซ้ำแนวทะแยงซ้าย
-        if (AlphaTable[i][0] == AlphaTable[i][8] &&
-                AlphaTable[i][8] == AlphaTable[i][16] &&
-                AlphaTable[i][16] == AlphaTable[i][24] &&
-                AlphaTable[i][24] == AlphaTable[i][32] &&
-                AlphaTable[i][32] == AlphaTable[i][40] &&
-                AlphaTable[i][40] == AlphaTable[i][48])
-                Score[i] += 20;
+        if (AlphaTable[i][0][0] == AlphaTable[i][1][1] &&
+            AlphaTable[i][1][1] == AlphaTable[i][2][2] &&
+            AlphaTable[i][2][2] == AlphaTable[i][3][3] &&
+            AlphaTable[i][3][3] == AlphaTable[i][4][4] &&
+            AlphaTable[i][4][4] == AlphaTable[i][5][5] &&
+            AlphaTable[i][5][5] == AlphaTable[i][6][6])
+            Score[i] += 20;
         //ซ้ำแนวทะแยงขวา
-        if (AlphaTable[i][6] == AlphaTable[i][12] &&
-                AlphaTable[i][12] == AlphaTable[i][18] &&
-                AlphaTable[i][18] == AlphaTable[i][24] &&
-                AlphaTable[i][24] == AlphaTable[i][30] &&
-                AlphaTable[i][30] == AlphaTable[i][36] &&
-                AlphaTable[i][36] == AlphaTable[i][42])
-                Score[i] += 20;
+        if (AlphaTable[i][0][6] == AlphaTable[i][1][5] &&
+            AlphaTable[i][1][5] == AlphaTable[i][2][4] &&
+            AlphaTable[i][2][4] == AlphaTable[i][3][3] &&
+            AlphaTable[i][3][3] == AlphaTable[i][4][2] &&
+            AlphaTable[i][4][2] == AlphaTable[i][5][1] &&
+            AlphaTable[i][5][1] == AlphaTable[i][6][0])
+            Score[i] += 20;
     }
 }
 
@@ -125,14 +120,15 @@ void DrawTable(int Player){
     ClearScr();
     printf("Player %d Has %d Turn Left\n", Player, Turn[Player-1]);
     printf("----------------------\n");
-    int i;
-    for (i = 0; i < 49; i++){
-        if (NumTable[Player - 1][i] < 10)
-            printf("| %d", NumTable[Player - 1][i]);
-        else
-            printf("|%d", NumTable[Player - 1][i]);
-        if ((i + 1) % 7 == 0)
-            printf("|\n");
+    int i, j;
+    for (i = 0; i < 7; i++){
+        for (j = 0; j < 7; j++){
+            if (NumTable[Player - 1][i][j] < 10)
+                printf("| %d", NumTable[Player - 1][i][j]);
+            else
+                printf("|%d", NumTable[Player - 1][i][j]);
+            }
+        printf("|\n");
     }
     printf("----------------------\n");
 }
@@ -141,45 +137,47 @@ void DrawAlpha(){
     ClearScr();
     printf("Player 1\n");
     printf("-----------------------------\n");
-    int i;
-    for (i = 0; i < 49; i++){
-        if (AlphaTable[0][i] == 'A')
-            printf("| \033[1;31m%c \033[0m", AlphaTable[0][i]);
-        if (AlphaTable[0][i] == 'B')
-            printf("| \033[1;32m%c \033[0m", AlphaTable[0][i]);
-        if (AlphaTable[0][i] == 'C')
-            printf("| \033[1;33m%c \033[0m", AlphaTable[0][i]);
-        if (AlphaTable[0][i] == 'D')
-            printf("| \033[1;34m%c \033[0m", AlphaTable[0][i]);
-        if (AlphaTable[0][i] == 'E')
-            printf("| \033[1;35m%c \033[0m", AlphaTable[0][i]);
-        if (AlphaTable[0][i] == 'F')
-            printf("| \033[1;36m%c \033[0m", AlphaTable[0][i]);
-        if (AlphaTable[0][i] == 'G')
-            printf("| \033[1;37m%c \033[0m", AlphaTable[0][i]);
-        if ((i + 1) % 7 == 0)
-            printf("|\n");
+    int i, j;
+    for (i = 0; i < 7; i++){
+        for (j = 0; j< 7; j++){
+            if (AlphaTable[0][i][j] == 'A')
+                printf("| \033[1;31m%c \033[0m", AlphaTable[0][i][j]);
+            if (AlphaTable[0][i][j] == 'B')
+                printf("| \033[1;32m%c \033[0m", AlphaTable[0][i][j]);
+            if (AlphaTable[0][i][j] == 'C')
+                printf("| \033[1;33m%c \033[0m", AlphaTable[0][i][j]);
+            if (AlphaTable[0][i][j] == 'D')
+                printf("| \033[1;34m%c \033[0m", AlphaTable[0][i][j]);
+            if (AlphaTable[0][i][j] == 'E')
+                printf("| \033[1;35m%c \033[0m", AlphaTable[0][i][j]);
+            if (AlphaTable[0][i][j] == 'F')
+                printf("| \033[1;36m%c \033[0m", AlphaTable[0][i][j]);
+            if (AlphaTable[0][i][j] == 'G')
+                printf("| \033[1;37m%c \033[0m", AlphaTable[0][i][j]);
+        }
+        printf("|\n");
     }
     printf("-----------------------------\n");
     printf("Player 2\n");
     printf("-----------------------------\n");
-    for (i = 0; i < 49; i++){
-        if (AlphaTable[1][i] == 'A')
-            printf("| \033[1;31m%c \033[0m", AlphaTable[1][i]);
-        if (AlphaTable[1][i] == 'B')
-            printf("| \033[1;32m%c \033[0m", AlphaTable[1][i]);
-        if (AlphaTable[1][i] == 'C')
-            printf("| \033[1;33m%c \033[0m", AlphaTable[1][i]);
-        if (AlphaTable[1][i] == 'D')
-            printf("| \033[1;34m%c \033[0m", AlphaTable[1][i]);
-        if (AlphaTable[1][i] == 'E')
-            printf("| \033[1;35m%c \033[0m", AlphaTable[1][i]);
-        if (AlphaTable[1][i] == 'F')
-            printf("| \033[1;36m%c \033[0m", AlphaTable[1][i]);
-        if (AlphaTable[1][i] == 'G')
-            printf("| \033[1;37m%c \033[0m", AlphaTable[1][i]);
-        if ((i + 1) % 7 == 0)
-            printf("|\n");
+    for (i = 0; i < 7; i++){
+        for (j = 0; j < 7; j++){
+            if (AlphaTable[1][i][j] == 'A')
+                printf("| \033[1;31m%c \033[0m", AlphaTable[1][i][j]);
+            if (AlphaTable[1][i][j] == 'B')
+                printf("| \033[1;32m%c \033[0m", AlphaTable[1][i][j]);
+            if (AlphaTable[1][i][j] == 'C')
+                printf("| \033[1;33m%c \033[0m", AlphaTable[1][i][j]);
+            if (AlphaTable[1][i][j] == 'D')
+                printf("| \033[1;34m%c \033[0m", AlphaTable[1][i][j]);
+            if (AlphaTable[1][i][j] == 'E')
+                printf("| \033[1;35m%c \033[0m", AlphaTable[1][i][j]);
+            if (AlphaTable[1][i][j] == 'F')
+                printf("| \033[1;36m%c \033[0m", AlphaTable[1][i][j]);
+            if (AlphaTable[1][i][j] == 'G')
+                printf("| \033[1;37m%c \033[0m", AlphaTable[1][i][j]);
+        }
+        printf("|\n");
     }
     printf("-----------------------------\n");
 }
@@ -190,22 +188,24 @@ void RandomAlpha(){
     for (i = 0; i < 2; i++)
         for (j = 0; j < 7; j++)
             for (k = 0; k < 7; k++){
-                int index = (rand() % 49);
-                if (AlphaTable[i][index] == ' ')
-                    AlphaTable[i][index] = Alpha[j];
+                int row = (rand() % 7);
+                int col = (rand() % 7);
+                if (AlphaTable[i][row][col] == ' ')
+                    AlphaTable[i][row][col] = Alpha[j];
                 else
                     k -= 1;
             }
 }
 
 void Init(){
-    int i;
-    for (i = 0; i < 49; i++){
-        NumTable[0][i] = i + 1;
-        NumTable[1][i] = i + 1;
-        AlphaTable[0][i] = ' ';
-        AlphaTable[1][i] = ' ';
-    }
+    int i, j;
+    for (i = 0; i < 7; i++)
+        for (j = 0; j < 7; j++){
+        NumTable[0][i][j] = NumTable[0][i][j-1] + 1;
+        NumTable[1][i][j] = NumTable[1][i][j-1] + 1;
+        AlphaTable[0][i][j] = ' ';
+        AlphaTable[1][i][j] = ' ';
+        }
 
     Turn[0] = 10;
     Turn[1] = 10;
@@ -243,7 +243,7 @@ int main(){
         if (Turn[0] <= 0 && Turn[1] <= 0)
             break;
     }
-
+    CheckPattern();
     DrawAlpha();
     printf("Player 1 Score : %d\n", Score[0]);
     printf("Player 2 Score : %d\n", Score[1]);
