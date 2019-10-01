@@ -179,7 +179,7 @@ void RandomAlpha(int Player, int Pos){
             for (j = 0; j < 7; j++)
                 if (AlphaTable[Player - 1][i][j] == _Alpha)
                     count += 1;
-        if (count < 7 && AlphaTable[Player - 1][row][col] == ' '){
+        if (count < 7){
             AlphaTable[Player - 1][row][col] = Alpha[_Alpha];
             break;
         }
